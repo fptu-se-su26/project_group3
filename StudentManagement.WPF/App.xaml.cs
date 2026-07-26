@@ -24,12 +24,15 @@ namespace StudentManagement.WPF
             services.AddDbContext<AppDbContext>();
 
             // Services
+            services.AddTransient<IFinanceGradeService, FinanceGradeService>();
             services.AddTransient<ICourseService, CourseService>();
             services.AddTransient<IAcademicService, AcademicService>();
             services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<IAuthService, AuthService>();
 
             // ViewModels
+            services.AddTransient<GradeManagementViewModel>();
+            services.AddTransient<FinanceReportingViewModel>();
             services.AddTransient<CourseManagementViewModel>();
             services.AddTransient<CourseRegistrationViewModel>();
             services.AddTransient<AcademicManagementViewModel>();
@@ -39,6 +42,8 @@ namespace StudentManagement.WPF
             services.AddTransient<LoginViewModel>();
 
             // Views
+            services.AddTransient<GradeManagementView>(provider => new GradeManagementView { DataContext = provider.GetRequiredService<GradeManagementViewModel>() });
+            services.AddTransient<FinanceReportingView>(provider => new FinanceReportingView { DataContext = provider.GetRequiredService<FinanceReportingViewModel>() });
             services.AddTransient<CourseManagementView>(provider => new CourseManagementView { DataContext = provider.GetRequiredService<CourseManagementViewModel>() });
             services.AddTransient<CourseRegistrationView>(provider => new CourseRegistrationView { DataContext = provider.GetRequiredService<CourseRegistrationViewModel>() });
             services.AddTransient<AcademicManagementView>(provider => new AcademicManagementView { DataContext = provider.GetRequiredService<AcademicManagementViewModel>() });
@@ -73,6 +78,7 @@ namespace StudentManagement.WPF
         }
     }
 }
+
 
 
 
