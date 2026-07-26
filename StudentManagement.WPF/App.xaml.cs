@@ -24,12 +24,17 @@ namespace StudentManagement.WPF
             services.AddDbContext<AppDbContext>();
 
             // Services
+            services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<IAuthService, AuthService>();
 
             // ViewModels
+            services.AddTransient<StudentManagementViewModel>();
+            services.AddTransient<StudentDetailViewModel>();
             services.AddTransient<LoginViewModel>();
 
             // Views
+            services.AddTransient<StudentManagementView>(provider => new StudentManagementView { DataContext = provider.GetRequiredService<StudentManagementViewModel>() });
+            services.AddTransient<StudentDetailWindow>();
             services.AddTransient<LoginWindow>(provider => new LoginWindow
             {
                 DataContext = provider.GetRequiredService<LoginViewModel>()
@@ -58,3 +63,4 @@ namespace StudentManagement.WPF
         }
     }
 }
+
