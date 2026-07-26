@@ -1,0 +1,77 @@
+<Window x:Class="StudentManagement.WPF.Views.CourseRegistrationView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Course Registration" Height="700" Width="1100" Background="#F3F4F6">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Student Course Registration" FontSize="26" FontWeight="Bold" Foreground="#1F2937" Margin="0,0,0,20"/>
+        
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="6*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Left Panel: Available Sections -->
+            <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,10,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="Available Course Sections (SP24)" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                    
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding AvailableSections}" SelectedItem="{Binding SelectedAvailableSection}"
+                              AutoGenerateColumns="False" IsReadOnly="True" RowHeight="35" AlternatingRowBackground="#F9FAFB" Margin="0,0,0,15">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Section ID" Binding="{Binding SectionId}" Width="90"/>
+                            <DataGridTextColumn Header="Subject" Binding="{Binding Subject.SubjectName}" Width="150"/>
+                            <DataGridTextColumn Header="Credits" Binding="{Binding Subject.Credits}" Width="60"/>
+                            <DataGridTextColumn Header="Lecturer" Binding="{Binding Lecturer.FullName}" Width="120"/>
+                            <DataGridTextColumn Header="Room" Binding="{Binding Room}" Width="60"/>
+                            <DataGridTextColumn Header="Day" Binding="{Binding DayOfWeek}" Width="60"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Refresh" Command="{Binding RefreshCommand}" Width="80" Height="35" Margin="0,0,10,0"/>
+                        <Button Content="Register Course" Command="{Binding RegisterCommand}" Width="120" Height="35" Background="#10B981" Foreground="White" FontWeight="Bold"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Right Panel: Timetable & Credits -->
+            <Border Grid.Column="1" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="15" Margin="10,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="My Timetable" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                    
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding Timetable}"
+                              AutoGenerateColumns="False" IsReadOnly="True" RowHeight="35" AlternatingRowBackground="#F9FAFB" Margin="0,0,0,15">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Subject" Binding="{Binding Subject.SubjectName}" Width="150"/>
+                            <DataGridTextColumn Header="Day" Binding="{Binding DayOfWeek}" Width="60"/>
+                            <DataGridTextColumn Header="Time" Binding="{Binding StartTime}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock Text="Total Credits: " FontSize="16" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding TotalCredits}" FontSize="16" FontWeight="Bold" Foreground="#3B82F6"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
