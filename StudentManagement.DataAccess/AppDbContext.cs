@@ -28,7 +28,7 @@ namespace StudentManagement.DataAccess
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=(local);Database=StudentManagementDB;Trusted_Connection=True;TrustServerCertificate=True;");
+                optionsBuilder.UseSqlServer("Server=(local);Database=StudentManagementSystem_EF;User Id=sa;Password=2509;TrustServerCertificate=True;");
             }
         }
 
