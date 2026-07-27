@@ -46,6 +46,7 @@ namespace StudentManagement.Business.Services
             grade.Practical = practical;
             grade.FinalExam = finalExam;
 
+            // F26: Calculate final grade using 20% Assignment, 20% Progress Test, 20% Practical, and 40% Final Exam weights
             double total = 0;
             if (assignment.HasValue) total += assignment.Value * 0.2;
             if (progressTest.HasValue) total += progressTest.Value * 0.2;
