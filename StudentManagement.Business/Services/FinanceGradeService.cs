@@ -154,7 +154,7 @@ namespace StudentManagement.Business.Services
             return (true, "Payment processed successfully.");
         }
 
-        // Results & Reports
+        // F27: View Academic Results (Show semester results, completed credits, average score, passed/failed subjects)
         public async Task<AcademicResultSummary> GetAcademicResultsAsync(string studentId, string semesterId)
         {
             var registrations = await _context.Registrations
