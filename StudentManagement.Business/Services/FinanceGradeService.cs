@@ -189,6 +189,7 @@ namespace StudentManagement.Business.Services
             return summary;
         }
 
+        // F30: Generate academic and tuition reports using LINQ (Class, Major, Unpaid Tuition, Collected Tuition)
         public async Task<IEnumerable<ClassReportItem>> GetClassReportAsync()
         {
             return await _context.Classes
