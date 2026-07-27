@@ -8,6 +8,14 @@ namespace StudentManagement.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<Role> builder) {
             builder.HasKey(e => e.RoleId);
             builder.Property(e => e.RoleName).IsRequired().HasMaxLength(50);
+
+            builder.HasData(
+                new Role { RoleId = 1, RoleName = "Administrator" },
+                new Role { RoleId = 2, RoleName = "AcademicStaff" },
+                new Role { RoleId = 3, RoleName = "Lecturer" },
+                new Role { RoleId = 4, RoleName = "Accountant" },
+                new Role { RoleId = 5, RoleName = "Student" }
+            );
         }
     }
 
@@ -18,6 +26,16 @@ namespace StudentManagement.DataAccess.Configurations
             builder.Property(e => e.Username).IsRequired().HasMaxLength(50);
             builder.Property(e => e.PasswordHash).IsRequired();
             builder.HasOne(d => d.Role).WithMany(p => p.Users).HasForeignKey(d => d.RoleId).OnDelete(DeleteBehavior.Restrict);
+
+            // Seed admin account. Password: Admin@123 (PBKDF2, precomputed with a fixed salt so migrations stay stable).
+            builder.HasData(new User
+            {
+                UserId = 1,
+                Username = "admin",
+                PasswordHash = "100000.AQIDBAUGBwgJCgsMDQ4PEA==.7gQDaNbD2TJ9Tv/U3z+oOOw+byXCRpvOoV5EbjMrc1w=",
+                RoleId = 1,
+                Status = true
+            });
         }
     }
 
@@ -26,6 +44,7 @@ namespace StudentManagement.DataAccess.Configurations
             builder.HasKey(e => e.MajorId);
             builder.Property(e => e.MajorId).HasMaxLength(20);
             builder.Property(e => e.MajorName).IsRequired().HasMaxLength(100);
+            builder.HasIndex(e => e.MajorName); // speeds up name search (F13)
         }
     }
 
@@ -35,6 +54,7 @@ namespace StudentManagement.DataAccess.Configurations
             builder.Property(e => e.LecturerId).HasMaxLength(20);
             builder.Property(e => e.FullName).IsRequired().HasMaxLength(100);
             builder.Property(e => e.Email).IsRequired().HasMaxLength(100);
+            builder.HasIndex(e => e.FullName); // speeds up name search (F16)
         }
     }
 
@@ -53,6 +73,8 @@ namespace StudentManagement.DataAccess.Configurations
             builder.HasKey(e => e.StudentId);
             builder.Property(e => e.StudentId).HasMaxLength(20);
             builder.Property(e => e.FullName).IsRequired().HasMaxLength(100);
+            builder.HasIndex(e => e.FullName); // speeds up search/sort by name (F10)
+            builder.HasIndex(e => e.Status); // speeds up status filter (F10, F11)
             builder.HasOne(d => d.Class).WithMany(p => p.Students).HasForeignKey(d => d.ClassId).OnDelete(DeleteBehavior.Restrict);
         }
     }
@@ -62,6 +84,7 @@ namespace StudentManagement.DataAccess.Configurations
             builder.HasKey(e => e.SubjectId);
             builder.Property(e => e.SubjectId).HasMaxLength(20);
             builder.Property(e => e.SubjectName).IsRequired().HasMaxLength(100);
+            builder.HasIndex(e => e.SubjectName); // speeds up name search (F19)
         }
     }
 
@@ -77,6 +100,7 @@ namespace StudentManagement.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<CourseSection> builder) {
             builder.HasKey(e => e.SectionId);
             builder.Property(e => e.SectionId).HasMaxLength(20);
+            builder.HasIndex(e => new { e.SemesterId, e.Status }); // speeds up "available sections for semester" (F20/F22)
             builder.HasOne(d => d.Subject).WithMany(p => p.CourseSections).HasForeignKey(d => d.SubjectId).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(d => d.Lecturer).WithMany(p => p.CourseSections).HasForeignKey(d => d.LecturerId).OnDelete(DeleteBehavior.SetNull);
             builder.HasOne(d => d.Semester).WithMany(p => p.CourseSections).HasForeignKey(d => d.SemesterId).OnDelete(DeleteBehavior.Restrict);
@@ -105,6 +129,7 @@ namespace StudentManagement.DataAccess.Configurations
             builder.Property(e => e.PricePerCredit).HasColumnType("decimal(18,2)");
             builder.Property(e => e.Amount).HasColumnType("decimal(18,2)");
             builder.Property(e => e.PaidAmount).HasColumnType("decimal(18,2)");
+            builder.HasIndex(e => e.Status); // speeds up unpaid-tuition report (F30)
             builder.HasOne(d => d.Student).WithMany(p => p.Tuitions).HasForeignKey(d => d.StudentId).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(d => d.Semester).WithMany(p => p.Tuitions).HasForeignKey(d => d.SemesterId).OnDelete(DeleteBehavior.Restrict);
         }
