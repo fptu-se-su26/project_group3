@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using StudentManagement.Business.Interfaces;
-using StudentManagement.Business.Validators;
 using StudentManagement.DataAccess;
 using StudentManagement.Domain.Entities;
 using StudentManagement.Domain.Enums;
@@ -20,6 +19,23 @@ namespace StudentManagement.Business.Services
             _context = context;
         }
 
+<<<<<<< HEAD
+        public async Task<IEnumerable<Subject>> GetAllSubjectsAsync()
+        {
+            return await _context.Subjects.ToListAsync();
+        }
+
+        public async Task AddSubjectAsync(Subject subject)
+        {
+            await _context.Subjects.AddAsync(subject);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateSubjectAsync(Subject subject)
+        {
+            _context.Subjects.Update(subject);
+            await _context.SaveChangesAsync();
+=======
         public async Task<IEnumerable<Subject>> GetAllSubjectsAsync(string? searchKeyword = null)
         {
             var query = _context.Subjects.AsNoTracking().AsQueryable();
@@ -63,18 +79,30 @@ namespace StudentManagement.Business.Services
             subject.Status = SubjectStatus.Inactive;
             await _context.SaveChangesAsync();
             return (true, "Subject deactivated.");
+>>>>>>> origin/Main
         }
 
         public async Task<IEnumerable<CourseSection>> GetAllCourseSectionsAsync()
         {
             return await _context.CourseSections
-                .AsNoTracking()
                 .Include(cs => cs.Subject)
                 .Include(cs => cs.Lecturer)
                 .Include(cs => cs.Semester)
                 .ToListAsync();
         }
 
+<<<<<<< HEAD
+        public async Task AddCourseSectionAsync(CourseSection section)
+        {
+            await _context.CourseSections.AddAsync(section);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateCourseSectionAsync(CourseSection section)
+        {
+            _context.CourseSections.Update(section);
+            await _context.SaveChangesAsync();
+=======
         public async Task<(bool IsSuccess, string Message)> AddCourseSectionAsync(CourseSection section)
         {
             if (!ValidationHelper.IsRequired(section.SectionId) || !ValidationHelper.IsRequired(section.SubjectId))
@@ -136,12 +164,12 @@ namespace StudentManagement.Business.Services
             section.LecturerId = lecturerId;
             await _context.SaveChangesAsync();
             return (true, "Lecturer assigned to section.");
+>>>>>>> origin/Main
         }
 
         public async Task<IEnumerable<CourseSection>> GetAvailableSectionsForSemesterAsync(string semesterId)
         {
             return await _context.CourseSections
-                .AsNoTracking()
                 .Include(cs => cs.Subject)
                 .Include(cs => cs.Lecturer)
                 .Where(cs => cs.SemesterId == semesterId && cs.Status == CourseSectionStatus.Opened)
@@ -151,7 +179,6 @@ namespace StudentManagement.Business.Services
         public async Task<IEnumerable<CourseSection>> GetStudentTimetableAsync(string studentId, string semesterId)
         {
             return await _context.Registrations
-                .AsNoTracking()
                 .Where(r => r.StudentId == studentId && r.CourseSection.SemesterId == semesterId && r.Status != RegistrationStatus.Cancelled)
                 .Include(r => r.CourseSection)
                 .ThenInclude(cs => cs.Subject)
@@ -167,6 +194,18 @@ namespace StudentManagement.Business.Services
 
             if (section == null) return (false, "Course section not found.");
             if (section.Status != CourseSectionStatus.Opened) return (false, "Course section is not open for registration.");
+<<<<<<< HEAD
+            
+            // Check Capacity
+            var currentEnrolled = section.Registrations.Count(r => r.Status != RegistrationStatus.Cancelled);
+            if (currentEnrolled >= section.Capacity) return (false, "Course section is full.");
+
+            // Check if already registered
+            var alreadyRegistered = section.Registrations.Any(r => r.StudentId == studentId && r.Status != RegistrationStatus.Cancelled);
+            if (alreadyRegistered) return (false, "You are already registered for this section.");
+
+            // Check Schedule Conflict
+=======
 
             var currentEnrolled = section.Registrations.Count(r => r.Status != RegistrationStatus.Cancelled);
             if (currentEnrolled >= section.Capacity) return (false, "Course section is full.");
@@ -174,6 +213,7 @@ namespace StudentManagement.Business.Services
             var alreadyRegistered = section.Registrations.Any(r => r.StudentId == studentId && r.Status != RegistrationStatus.Cancelled);
             if (alreadyRegistered) return (false, "You are already registered for this section.");
 
+>>>>>>> origin/Main
             var studentTimetable = await GetStudentTimetableAsync(studentId, section.SemesterId);
             foreach (var enrolled in studentTimetable)
             {
@@ -202,6 +242,11 @@ namespace StudentManagement.Business.Services
             return (true, "Registration successful!");
         }
 
+<<<<<<< HEAD
+        public async Task<IEnumerable<Student>> GetStudentsBySectionAsync(string sectionId)
+        {
+            return await _context.Registrations
+=======
         public async Task<(bool IsSuccess, string Message)> CancelRegistrationAsync(int registrationId)
         {
             var registration = await _context.Registrations
@@ -233,6 +278,7 @@ namespace StudentManagement.Business.Services
         {
             return await _context.Registrations
                 .AsNoTracking()
+>>>>>>> origin/Main
                 .Where(r => r.SectionId == sectionId && r.Status != RegistrationStatus.Cancelled)
                 .Include(r => r.Student)
                 .Select(r => r.Student)
@@ -243,11 +289,6 @@ namespace StudentManagement.Business.Services
         {
             var timetable = await GetStudentTimetableAsync(studentId, semesterId);
             return timetable.Sum(cs => cs.Subject.Credits);
-        }
-
-        public async Task<IEnumerable<Semester>> GetAllSemestersAsync()
-        {
-            return await _context.Semesters.AsNoTracking().ToListAsync();
         }
     }
 }

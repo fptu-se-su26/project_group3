@@ -15,33 +15,30 @@ namespace StudentManagement.WPF.ViewModels
         private readonly ICourseService _courseService;
         private readonly string _currentStudentId;
 
-        public ObservableCollection<Semester> Semesters { get; } = new();
-
-        private Semester? _selectedSemester;
-        public Semester? SelectedSemester
-        {
-            get => _selectedSemester;
-            set { _selectedSemester = value; OnPropertyChanged(); _ = LoadDataAsync(); }
-        }
-
         private ObservableCollection<CourseSection> _availableSections = new ObservableCollection<CourseSection>();
         public ObservableCollection<CourseSection> AvailableSections { get => _availableSections; set { _availableSections = value; OnPropertyChanged(); } }
         public CourseSection? SelectedAvailableSection { get; set; }
 
         private ObservableCollection<CourseSection> _timetable = new ObservableCollection<CourseSection>();
         public ObservableCollection<CourseSection> Timetable { get => _timetable; set { _timetable = value; OnPropertyChanged(); } }
-        public CourseSection? SelectedTimetableEntry { get; set; }
 
         private int _totalCredits;
         public int TotalCredits { get => _totalCredits; set { _totalCredits = value; OnPropertyChanged(); } }
 
         public ICommand RegisterCommand { get; }
-        public ICommand CancelCommand { get; }
         public ICommand RefreshCommand { get; }
 
         public CourseRegistrationViewModel(ICourseService courseService)
         {
             _courseService = courseService;
+<<<<<<< HEAD
+            _currentStudentId = SessionManager.Instance.CurrentUser?.Username ?? "SE150001"; // Fallback to a mock student
+
+            RegisterCommand = new RelayCommand(async _ => await RegisterCourseAsync(), _ => SelectedAvailableSection != null);
+            RefreshCommand = new RelayCommand(async _ => await LoadDataAsync());
+
+            _ = LoadDataAsync();
+=======
             _currentStudentId = SessionManager.Instance.CurrentUser?.Username ?? "SE150001";
 
             RegisterCommand = new RelayCommand(async _ => await RegisterCourseAsync(), _ => SelectedAvailableSection != null);
@@ -56,10 +53,22 @@ namespace StudentManagement.WPF.ViewModels
             var semesters = await _courseService.GetAllSemestersAsync();
             foreach (var s in semesters) Semesters.Add(s);
             SelectedSemester = Semesters.Count > 0 ? Semesters[0] : null;
+>>>>>>> origin/Main
         }
 
         private async Task LoadDataAsync()
         {
+<<<<<<< HEAD
+            try
+            {
+                var available = await _courseService.GetAvailableSectionsForSemesterAsync(_currentSemesterId);
+                AvailableSections = new ObservableCollection<CourseSection>(available);
+
+                var schedule = await _courseService.GetStudentTimetableAsync(_currentStudentId, _currentSemesterId);
+                Timetable = new ObservableCollection<CourseSection>(schedule);
+
+                TotalCredits = await _courseService.CalculateTotalCreditsAsync(_currentStudentId, _currentSemesterId);
+=======
             if (SelectedSemester == null) return;
             try
             {
@@ -70,6 +79,7 @@ namespace StudentManagement.WPF.ViewModels
                 Timetable = new ObservableCollection<CourseSection>(schedule);
 
                 TotalCredits = await _courseService.CalculateTotalCreditsAsync(_currentStudentId, SelectedSemester.SemesterId);
+>>>>>>> origin/Main
             }
             catch (Exception ex)
             {
@@ -81,6 +91,15 @@ namespace StudentManagement.WPF.ViewModels
         {
             if (SelectedAvailableSection == null) return;
 
+<<<<<<< HEAD
+            var (isSuccess, message) = await _courseService.RegisterCourseAsync(_currentStudentId, SelectedAvailableSection.SectionId);
+            
+            MessageBox.Show(message, isSuccess ? "Success" : "Registration Failed", MessageBoxButton.OK, isSuccess ? MessageBoxImage.Information : MessageBoxImage.Warning);
+            
+            if (isSuccess)
+            {
+                await LoadDataAsync();
+=======
             try
             {
                 var (isSuccess, message) = await _courseService.RegisterCourseAsync(_currentStudentId, SelectedAvailableSection.SectionId);
@@ -111,6 +130,7 @@ namespace StudentManagement.WPF.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"Error cancelling registration: {ex.Message}");
+>>>>>>> origin/Main
             }
         }
     }
