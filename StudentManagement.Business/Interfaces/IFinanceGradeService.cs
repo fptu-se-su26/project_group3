@@ -10,6 +10,12 @@ namespace StudentManagement.Business.Interfaces
     {
         // Grades
         Task<IEnumerable<Grade>> GetGradesForSectionAsync(string sectionId);
+        Task UpdateGradeAsync(int gradeId, double? assignment, double? progressTest, double? practical, double? finalExam);
+
+        // Tuition & Finance
+        Task<IEnumerable<Tuition>> GetAllTuitionsAsync(string? semesterId = null);
+        Task GenerateTuitionForSemesterAsync(string semesterId);
+        Task ProcessPaymentAsync(int tuitionId, decimal amount, PaymentMethod method, string? note);
         Task<(bool IsSuccess, string Message)> UpdateGradeAsync(int gradeId, double? assignment, double? progressTest, double? practical, double? finalExam);
 
         // Tuition & Finance

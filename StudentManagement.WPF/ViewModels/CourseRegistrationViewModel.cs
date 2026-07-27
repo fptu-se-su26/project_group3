@@ -14,6 +14,7 @@ namespace StudentManagement.WPF.ViewModels
     {
         private readonly ICourseService _courseService;
         private readonly string _currentStudentId;
+        private readonly string _currentSemesterId = "SP24"; // Hardcoded for mockup
 
         public ObservableCollection<Semester> Semesters { get; } = new();
 
@@ -42,6 +43,12 @@ namespace StudentManagement.WPF.ViewModels
         public CourseRegistrationViewModel(ICourseService courseService)
         {
             _courseService = courseService;
+            _currentStudentId = SessionManager.Instance.CurrentUser?.Username ?? "SE150001"; // Fallback to a mock student
+
+            RegisterCommand = new RelayCommand(async _ => await RegisterCourseAsync(), _ => SelectedAvailableSection != null);
+            RefreshCommand = new RelayCommand(async _ => await LoadDataAsync());
+
+            _ = LoadDataAsync();
             _currentStudentId = SessionManager.Instance.CurrentUser?.Username ?? "SE150001";
 
             RegisterCommand = new RelayCommand(async _ => await RegisterCourseAsync(), _ => SelectedAvailableSection != null);
@@ -60,6 +67,15 @@ namespace StudentManagement.WPF.ViewModels
 
         private async Task LoadDataAsync()
         {
+            try
+            {
+                var available = await _courseService.GetAvailableSectionsForSemesterAsync(_currentSemesterId);
+                AvailableSections = new ObservableCollection<CourseSection>(available);
+
+                var schedule = await _courseService.GetStudentTimetableAsync(_currentStudentId, _currentSemesterId);
+                Timetable = new ObservableCollection<CourseSection>(schedule);
+
+                TotalCredits = await _courseService.CalculateTotalCreditsAsync(_currentStudentId, _currentSemesterId);
             if (SelectedSemester == null) return;
             try
             {
@@ -81,6 +97,13 @@ namespace StudentManagement.WPF.ViewModels
         {
             if (SelectedAvailableSection == null) return;
 
+            var (isSuccess, message) = await _courseService.RegisterCourseAsync(_currentStudentId, SelectedAvailableSection.SectionId);
+            
+            MessageBox.Show(message, isSuccess ? "Success" : "Registration Failed", MessageBoxButton.OK, isSuccess ? MessageBoxImage.Information : MessageBoxImage.Warning);
+            
+            if (isSuccess)
+            {
+                await LoadDataAsync();
             try
             {
                 var (isSuccess, message) = await _courseService.RegisterCourseAsync(_currentStudentId, SelectedAvailableSection.SectionId);

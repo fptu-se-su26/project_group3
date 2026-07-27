@@ -24,6 +24,14 @@ namespace StudentManagement.WPF.ViewModels
         public ObservableCollection<CourseSection> Sections { get => _sections; set { _sections = value; OnPropertyChanged(); } }
         public CourseSection? SelectedSection { get; set; }
 
+        public ICommand LoadDataCommand { get; }
+
+        public CourseManagementViewModel(ICourseService courseService)
+        {
+            _courseService = courseService;
+            LoadDataCommand = new RelayCommand(async _ => await LoadDataAsync());
+
+            _ = LoadDataAsync();
         public ObservableCollection<Lecturer> Lecturers { get; } = new();
         public ObservableCollection<Semester> Semesters { get; } = new();
 
@@ -106,6 +114,7 @@ namespace StudentManagement.WPF.ViewModels
         {
             try
             {
+                var subjectsList = await _courseService.GetAllSubjectsAsync();
                 var subjectsList = await _courseService.GetAllSubjectsAsync(SearchText);
                 Subjects = new ObservableCollection<Subject>(subjectsList);
 

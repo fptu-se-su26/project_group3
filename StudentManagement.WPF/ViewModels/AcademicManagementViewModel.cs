@@ -1,5 +1,6 @@
 using StudentManagement.Business.Interfaces;
 using StudentManagement.Domain.Entities;
+using StudentManagement.WPF.Commands;
 using StudentManagement.Domain.Enums;
 using StudentManagement.WPF.Commands;
 using StudentManagement.WPF.Views;
@@ -48,6 +49,8 @@ namespace StudentManagement.WPF.ViewModels
         public ObservableCollection<Lecturer> Lecturers { get => _lecturers; set { _lecturers = value; OnPropertyChanged(); } }
         public Lecturer? SelectedLecturer { get; set; }
 
+        public ICommand LoadDataCommand { get; }
+        public ICommand ViewClassStudentsCommand { get; }
         private string _newLecturerId = string.Empty;
         public string NewLecturerId { get => _newLecturerId; set { _newLecturerId = value; OnPropertyChanged(); } }
 
@@ -90,12 +93,14 @@ namespace StudentManagement.WPF.ViewModels
         {
             try
             {
+                var majorsList = await _academicService.GetAllMajorsAsync();
                 var majorsList = await _academicService.GetAllMajorsAsync(SearchText);
                 Majors = new ObservableCollection<Major>(majorsList);
 
                 var classesList = await _academicService.GetAllClassesAsync();
                 Classes = new ObservableCollection<Class>(classesList);
 
+                var lecturersList = await _academicService.GetAllLecturersAsync();
                 var lecturersList = await _academicService.GetAllLecturersAsync(SearchText);
                 Lecturers = new ObservableCollection<Lecturer>(lecturersList);
             }
@@ -107,6 +112,7 @@ namespace StudentManagement.WPF.ViewModels
 
         private void ViewClassStudents()
         {
+            // Code to open ClassStudentListView with SelectedClass
             if (SelectedClass == null) return;
             var window = new ClassStudentListView { DataContext = new ClassStudentListViewModel(_academicService, SelectedClass.ClassId) };
             window.Show();
