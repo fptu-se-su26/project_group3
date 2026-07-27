@@ -8,14 +8,14 @@ namespace StudentManagement.Business.Interfaces
 {
     public interface IFinanceGradeService
     {
-        // Grades
+        /// <summary>
+        /// F25: Get all grades for a specific course section
+        /// </summary>
         Task<IEnumerable<Grade>> GetGradesForSectionAsync(string sectionId);
-        Task UpdateGradeAsync(int gradeId, double? assignment, double? progressTest, double? practical, double? finalExam);
 
-        // Tuition & Finance
-        Task<IEnumerable<Tuition>> GetAllTuitionsAsync(string? semesterId = null);
-        Task GenerateTuitionForSemesterAsync(string semesterId);
-        Task ProcessPaymentAsync(int tuitionId, decimal amount, PaymentMethod method, string? note);
+        /// <summary>
+        /// F25 & F26: Enter and update student grades (0 to 10 range)
+        /// </summary>
         Task<(bool IsSuccess, string Message)> UpdateGradeAsync(int gradeId, double? assignment, double? progressTest, double? practical, double? finalExam);
 
         // Tuition & Finance

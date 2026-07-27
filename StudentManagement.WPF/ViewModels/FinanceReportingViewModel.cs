@@ -14,7 +14,7 @@ namespace StudentManagement.WPF.ViewModels
     public class FinanceReportingViewModel : ViewModelBase
     {
         private readonly IFinanceGradeService _service;
-        private readonly string _currentSemesterId = "SP24";
+
         private readonly ICourseService _courseService;
 
         public ObservableCollection<Semester> Semesters { get; } = new();
@@ -46,9 +46,7 @@ namespace StudentManagement.WPF.ViewModels
         public ICommand GenerateTuitionCommand { get; }
         public ICommand ProcessPaymentCommand { get; }
 
-        public FinanceReportingViewModel(IFinanceGradeService service)
-        {
-            _service = service;
+
         public FinanceReportingViewModel(IFinanceGradeService service, ICourseService courseService)
         {
             _service = service;
@@ -57,7 +55,7 @@ namespace StudentManagement.WPF.ViewModels
             GenerateTuitionCommand = new RelayCommand(async _ => await GenerateTuitionAsync());
             ProcessPaymentCommand = new RelayCommand(async _ => await ProcessPaymentAsync(), _ => SelectedTuition != null);
 
-            _ = LoadDataAsync();
+
             _ = InitializeAsync();
         }
 
@@ -70,9 +68,7 @@ namespace StudentManagement.WPF.ViewModels
 
         private async Task LoadDataAsync()
         {
-            try
-            {
-                var tuitionsList = await _service.GetAllTuitionsAsync(_currentSemesterId);
+
             if (SelectedSemester == null) return;
             try
             {
@@ -90,9 +86,7 @@ namespace StudentManagement.WPF.ViewModels
 
         private async Task GenerateTuitionAsync()
         {
-            try
-            {
-                await _service.GenerateTuitionForSemesterAsync(_currentSemesterId);
+
             if (SelectedSemester == null) return;
             try
             {
@@ -109,25 +103,7 @@ namespace StudentManagement.WPF.ViewModels
         private async Task ProcessPaymentAsync()
         {
             if (SelectedTuition == null) return;
-            
-            // In a real app, open a dialog to input amount and method. Here we assume full payment via Cash.
-            var remaining = SelectedTuition.Amount - SelectedTuition.PaidAmount;
-            if (remaining <= 0) 
-            {
-                MessageBox.Show("Tuition is already fully paid.");
-                return;
-            }
 
-            try
-            {
-                await _service.ProcessPaymentAsync(SelectedTuition.TuitionId, remaining, PaymentMethod.Cash, "Paid in full");
-                MessageBox.Show("Payment processed successfully.");
-                await LoadDataAsync();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error processing payment: {ex.Message}");
-            }
 
             var (isSuccess, message) = await _service.ProcessPaymentAsync(SelectedTuition.TuitionId, PaymentAmount, PaymentMethodSelected, "Payment recorded via Finance screen");
             MessageBox.Show(message);

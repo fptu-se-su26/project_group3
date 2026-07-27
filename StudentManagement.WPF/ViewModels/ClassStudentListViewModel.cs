@@ -12,12 +12,6 @@ namespace StudentManagement.WPF.ViewModels
     {
         private readonly IAcademicService _academicService;
         private readonly string _classId;
-
-        private ObservableCollection<Student> _students = new ObservableCollection<Student>();
-        public ObservableCollection<Student> Students { get => _students; set { _students = value; OnPropertyChanged(); } }
-        
-        public int TotalStudents => Students.Count;
-
         private System.Collections.Generic.List<Student> _allStudents = new();
 
         private ObservableCollection<Student> _students = new ObservableCollection<Student>();
@@ -46,8 +40,6 @@ namespace StudentManagement.WPF.ViewModels
         private async Task LoadStudentsAsync()
         {
             var data = await _academicService.GetStudentsByClassAsync(_classId);
-            Students = new ObservableCollection<Student>(data);
-            OnPropertyChanged(nameof(TotalStudents));
             _allStudents = data.ToList();
             ApplyFilter();
         }

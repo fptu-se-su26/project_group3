@@ -1,7 +1,5 @@
 using StudentManagement.Business.Interfaces;
-using StudentManagement.Domain.Entities;
-using StudentManagement.WPF.Commands;
-using System.Collections.ObjectModel;
+
 using StudentManagement.Business.Services;
 using StudentManagement.Domain.Entities;
 using StudentManagement.WPF.Commands;
@@ -17,7 +15,7 @@ namespace StudentManagement.WPF.ViewModels
     public class GradeManagementViewModel : ViewModelBase
     {
         private readonly IFinanceGradeService _service;
-        private readonly string _currentSectionId = "CS101-SP24"; // Hardcoded for mockup
+
         private readonly ICourseService _courseService;
 
         public ObservableCollection<CourseSection> Sections { get; } = new();
@@ -36,13 +34,7 @@ namespace StudentManagement.WPF.ViewModels
         public ICommand LoadDataCommand { get; }
         public ICommand SaveGradeCommand { get; }
 
-        public GradeManagementViewModel(IFinanceGradeService service)
-        {
-            _service = service;
-            LoadDataCommand = new RelayCommand(async _ => await LoadDataAsync());
-            SaveGradeCommand = new RelayCommand(async _ => await SaveGradeAsync(), _ => SelectedGrade != null);
 
-            _ = LoadDataAsync();
         public GradeManagementViewModel(IFinanceGradeService service, ICourseService courseService)
         {
             _service = service;
@@ -69,9 +61,7 @@ namespace StudentManagement.WPF.ViewModels
 
         private async Task LoadDataAsync()
         {
-            try
-            {
-                var gradesList = await _service.GetGradesForSectionAsync(_currentSectionId);
+
             if (SelectedCourseSection == null) return;
             try
             {
@@ -89,9 +79,7 @@ namespace StudentManagement.WPF.ViewModels
             if (SelectedGrade == null) return;
             try
             {
-                await _service.UpdateGradeAsync(SelectedGrade.GradeId, SelectedGrade.Assignment, SelectedGrade.ProgressTest, SelectedGrade.Practical, SelectedGrade.FinalExam);
-                MessageBox.Show("Grade saved successfully.");
-                await LoadDataAsync();
+
                 var (success, message) = await _service.UpdateGradeAsync(SelectedGrade.GradeId, SelectedGrade.Assignment, SelectedGrade.ProgressTest, SelectedGrade.Practical, SelectedGrade.FinalExam);
                 MessageBox.Show(message);
                 if (success) await LoadDataAsync();
