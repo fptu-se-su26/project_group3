@@ -60,6 +60,7 @@ namespace StudentManagement.Domain.Entities
         public string ClassId { get; set; } = null!;
         public DateTime EnrollmentDate { get; set; }
         public StudentStatus Status { get; set; }
+        public string? StatusReason { get; set; }
         public Class Class { get; set; } = null!;
         public ICollection<Registration> Registrations { get; set; } = new List<Registration>();
         public ICollection<Tuition> Tuitions { get; set; } = new List<Tuition>();

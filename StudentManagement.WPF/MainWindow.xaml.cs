@@ -1,23 +1,20 @@
-﻿using System.Text;
+using StudentManagement.WPF.ViewModels;
+using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace StudentManagement.WPF;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public event Action? OnLogoutRequested;
+
+    public MainWindow(MainWindowViewModel viewModel)
     {
         InitializeComponent();
+        DataContext = viewModel;
+        if (DataContext is ViewModels.MainWindowViewModel vm)
+        {
+            vm.OnLogoutRequested += () => OnLogoutRequested?.Invoke();
+        }
     }
 }
