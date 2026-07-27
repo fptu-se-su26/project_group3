@@ -15,10 +15,26 @@ namespace StudentManagement.WPF.ViewModels
     {
         private readonly IFinanceGradeService _service;
         private readonly string _currentSemesterId = "SP24";
+        private readonly ICourseService _courseService;
+
+        public ObservableCollection<Semester> Semesters { get; } = new();
+
+        private Semester? _selectedSemester;
+        public Semester? SelectedSemester
+        {
+            get => _selectedSemester;
+            set { _selectedSemester = value; OnPropertyChanged(); _ = LoadDataAsync(); }
+        }
+
+        public decimal PricePerCredit { get; set; } = 1_000_000m;
 
         private ObservableCollection<Tuition> _tuitions = new ObservableCollection<Tuition>();
         public ObservableCollection<Tuition> Tuitions { get => _tuitions; set { _tuitions = value; OnPropertyChanged(); } }
         public Tuition? SelectedTuition { get; set; }
+
+        public decimal PaymentAmount { get; set; }
+        public PaymentMethod PaymentMethodSelected { get; set; } = PaymentMethod.Cash;
+        public ObservableCollection<PaymentMethod> PaymentMethods { get; } = new(Enum.GetValues<PaymentMethod>());
 
         private decimal _totalRevenue;
         public decimal TotalRevenue { get => _totalRevenue; set { _totalRevenue = value; OnPropertyChanged(); } }
@@ -33,11 +49,23 @@ namespace StudentManagement.WPF.ViewModels
         public FinanceReportingViewModel(IFinanceGradeService service)
         {
             _service = service;
+        public FinanceReportingViewModel(IFinanceGradeService service, ICourseService courseService)
+        {
+            _service = service;
+            _courseService = courseService;
             LoadDataCommand = new RelayCommand(async _ => await LoadDataAsync());
             GenerateTuitionCommand = new RelayCommand(async _ => await GenerateTuitionAsync());
             ProcessPaymentCommand = new RelayCommand(async _ => await ProcessPaymentAsync(), _ => SelectedTuition != null);
 
             _ = LoadDataAsync();
+            _ = InitializeAsync();
+        }
+
+        private async Task InitializeAsync()
+        {
+            var semesters = await _courseService.GetAllSemestersAsync();
+            foreach (var s in semesters) Semesters.Add(s);
+            SelectedSemester = Semesters.Count > 0 ? Semesters[0] : null;
         }
 
         private async Task LoadDataAsync()
@@ -45,6 +73,10 @@ namespace StudentManagement.WPF.ViewModels
             try
             {
                 var tuitionsList = await _service.GetAllTuitionsAsync(_currentSemesterId);
+            if (SelectedSemester == null) return;
+            try
+            {
+                var tuitionsList = await _service.GetAllTuitionsAsync(SelectedSemester.SemesterId);
                 Tuitions = new ObservableCollection<Tuition>(tuitionsList);
 
                 TotalRevenue = Tuitions.Sum(t => t.PaidAmount);
@@ -61,6 +93,10 @@ namespace StudentManagement.WPF.ViewModels
             try
             {
                 await _service.GenerateTuitionForSemesterAsync(_currentSemesterId);
+            if (SelectedSemester == null) return;
+            try
+            {
+                await _service.GenerateTuitionForSemesterAsync(SelectedSemester.SemesterId, PricePerCredit);
                 MessageBox.Show("Tuition generated successfully.");
                 await LoadDataAsync();
             }
@@ -91,6 +127,15 @@ namespace StudentManagement.WPF.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"Error processing payment: {ex.Message}");
+            }
+
+            var (isSuccess, message) = await _service.ProcessPaymentAsync(SelectedTuition.TuitionId, PaymentAmount, PaymentMethodSelected, "Payment recorded via Finance screen");
+            MessageBox.Show(message);
+
+            if (isSuccess)
+            {
+                PaymentAmount = 0;
+                await LoadDataAsync();
             }
         }
     }

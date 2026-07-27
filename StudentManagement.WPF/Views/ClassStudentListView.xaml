@@ -17,6 +17,15 @@
         </StackPanel>
 
         <DataGrid Grid.Row="2" ItemsSource="{Binding Students}"
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBox Width="180" Height="30" Padding="6,0" VerticalContentAlignment="Center"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,15,0" ToolTip="Search by ID or Name"/>
+            <TextBlock Text="Total Students: " FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding TotalStudents}" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Students}" CanUserSortColumns="True"
                   AutoGenerateColumns="False" IsReadOnly="True" RowHeight="35" AlternatingRowBackground="#F9FAFB">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding StudentId}" Width="100"/>

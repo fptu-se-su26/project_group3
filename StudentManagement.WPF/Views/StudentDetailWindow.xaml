@@ -1,7 +1,7 @@
 <Window x:Class="StudentManagement.WPF.Views.StudentDetailWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Student Detail" Height="500" Width="400" WindowStartupLocation="CenterOwner" Background="White">
+        Title="Student Detail" Height="600" Width="400" WindowStartupLocation="CenterOwner" Background="White">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -13,11 +13,13 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
         <TextBlock Text="Student Information" FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
-        
+
         <TextBox Grid.Row="1" Text="{Binding CurrentStudent.StudentId}" Margin="0,5" Padding="5" ToolTip="Student ID"/>
         <TextBox Grid.Row="2" Text="{Binding CurrentStudent.FullName}" Margin="0,5" Padding="5" ToolTip="Full Name"/>
         <DatePicker Grid.Row="3" SelectedDate="{Binding CurrentStudent.DateOfBirth}" Margin="0,5"/>
@@ -25,8 +27,10 @@
         <TextBox Grid.Row="5" Text="{Binding CurrentStudent.Email}" Margin="0,5" Padding="5" ToolTip="Email"/>
         <TextBox Grid.Row="6" Text="{Binding CurrentStudent.Phone}" Margin="0,5" Padding="5" ToolTip="Phone"/>
         <TextBox Grid.Row="7" Text="{Binding CurrentStudent.ClassId}" Margin="0,5" Padding="5" ToolTip="Class ID"/>
-        
-        <StackPanel Grid.Row="9" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+        <ComboBox Grid.Row="8" ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding CurrentStudent.Status}" Margin="0,5" Padding="5" ToolTip="Status"/>
+        <TextBox Grid.Row="9" Text="{Binding StatusReason}" Margin="0,5" Padding="5" ToolTip="Reason (required for Suspended/DroppedOut)"/>
+
+        <StackPanel Grid.Row="11" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
             <Button Content="Save" Command="{Binding SaveCommand}" Width="80" Height="30" Margin="0,0,10,0" Background="#10B981" Foreground="White"/>
             <Button Content="Cancel" Command="{Binding CancelCommand}" Width="80" Height="30" Background="#EF4444" Foreground="White"/>
         </StackPanel>
