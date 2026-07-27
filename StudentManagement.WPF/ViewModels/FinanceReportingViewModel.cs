@@ -14,6 +14,7 @@ namespace StudentManagement.WPF.ViewModels
     public class FinanceReportingViewModel : ViewModelBase
     {
         private readonly IFinanceGradeService _service;
+
         private readonly ICourseService _courseService;
 
         public ObservableCollection<Semester> Semesters { get; } = new();
@@ -45,6 +46,7 @@ namespace StudentManagement.WPF.ViewModels
         public ICommand GenerateTuitionCommand { get; }
         public ICommand ProcessPaymentCommand { get; }
 
+
         public FinanceReportingViewModel(IFinanceGradeService service, ICourseService courseService)
         {
             _service = service;
@@ -52,6 +54,7 @@ namespace StudentManagement.WPF.ViewModels
             LoadDataCommand = new RelayCommand(async _ => await LoadDataAsync());
             GenerateTuitionCommand = new RelayCommand(async _ => await GenerateTuitionAsync());
             ProcessPaymentCommand = new RelayCommand(async _ => await ProcessPaymentAsync(), _ => SelectedTuition != null);
+
 
             _ = InitializeAsync();
         }
@@ -65,6 +68,7 @@ namespace StudentManagement.WPF.ViewModels
 
         private async Task LoadDataAsync()
         {
+
             if (SelectedSemester == null) return;
             try
             {
@@ -82,6 +86,7 @@ namespace StudentManagement.WPF.ViewModels
 
         private async Task GenerateTuitionAsync()
         {
+
             if (SelectedSemester == null) return;
             try
             {
@@ -98,6 +103,7 @@ namespace StudentManagement.WPF.ViewModels
         private async Task ProcessPaymentAsync()
         {
             if (SelectedTuition == null) return;
+
 
             var (isSuccess, message) = await _service.ProcessPaymentAsync(SelectedTuition.TuitionId, PaymentAmount, PaymentMethodSelected, "Payment recorded via Finance screen");
             MessageBox.Show(message);

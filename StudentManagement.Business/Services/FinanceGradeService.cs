@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+
 using StudentManagement.Business.DTOs;
 using StudentManagement.Business.Interfaces;
 using StudentManagement.Business.Validators;
@@ -93,6 +94,7 @@ namespace StudentManagement.Business.Services
             {
                 var studentId = group.Key;
                 var totalCredits = group.Sum(r => r.CourseSection.Subject.Credits);
+
                 decimal totalAmount = totalCredits * pricePerCredit;
 
                 var existingTuition = await _context.Tuitions.FirstOrDefaultAsync(t => t.StudentId == studentId && t.SemesterId == semesterId);
@@ -114,6 +116,7 @@ namespace StudentManagement.Business.Services
                 }
                 else
                 {
+
                     existingTuition.TotalCredits = totalCredits;
                     existingTuition.PricePerCredit = pricePerCredit;
                     existingTuition.Amount = totalAmount;

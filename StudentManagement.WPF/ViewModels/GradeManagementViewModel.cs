@@ -1,4 +1,5 @@
 using StudentManagement.Business.Interfaces;
+
 using StudentManagement.Business.Services;
 using StudentManagement.Domain.Entities;
 using StudentManagement.WPF.Commands;
@@ -14,6 +15,7 @@ namespace StudentManagement.WPF.ViewModels
     public class GradeManagementViewModel : ViewModelBase
     {
         private readonly IFinanceGradeService _service;
+
         private readonly ICourseService _courseService;
 
         public ObservableCollection<CourseSection> Sections { get; } = new();
@@ -31,6 +33,7 @@ namespace StudentManagement.WPF.ViewModels
 
         public ICommand LoadDataCommand { get; }
         public ICommand SaveGradeCommand { get; }
+
 
         public GradeManagementViewModel(IFinanceGradeService service, ICourseService courseService)
         {
@@ -58,6 +61,7 @@ namespace StudentManagement.WPF.ViewModels
 
         private async Task LoadDataAsync()
         {
+
             if (SelectedCourseSection == null) return;
             try
             {
@@ -75,6 +79,7 @@ namespace StudentManagement.WPF.ViewModels
             if (SelectedGrade == null) return;
             try
             {
+
                 var (success, message) = await _service.UpdateGradeAsync(SelectedGrade.GradeId, SelectedGrade.Assignment, SelectedGrade.ProgressTest, SelectedGrade.Practical, SelectedGrade.FinalExam);
                 MessageBox.Show(message);
                 if (success) await LoadDataAsync();
