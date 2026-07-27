@@ -1,7 +1,0 @@
-<Solution>
-  <Project Path="StudentManagement.Business/StudentManagement.Business.csproj" />
-  <Project Path="StudentManagement.DataAccess/StudentManagement.DataAccess.csproj" />
-  <Project Path="StudentManagement.Domain/StudentManagement.Domain.csproj" />
-  <Project Path="StudentManagement.Tests/StudentManagement.Tests.csproj" />
-  <Project Path="StudentManagement.WPF/StudentManagement.WPF.csproj" />
-</Solution>
