@@ -1,15 +1,15 @@
 <Window x:Class="StudentManagement.WPF.Views.AcademicManagementView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Academic Management" Height="650" Width="1000" Background="#F3F4F6">
-    
+        Title="Academic Management" Height="700" Width="1050" Background="{StaticResource ParchmentBrush}">
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Academic Management" FontSize="26" FontWeight="Bold" Foreground="#1F2937" Margin="0,0,0,15"/>
+        <TextBlock Text="Academic Management" Style="{StaticResource PageTitleStyle}" Margin="0,0,0,15"/>
 
         <TabControl Grid.Row="1" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" Padding="10">
             <!-- Majors Tab -->
@@ -17,21 +17,29 @@
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    
+
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBox Width="150" Height="30" Padding="5,0" VerticalContentAlignment="Center" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0" ToolTip="Search"/>
                         <Button Content="Refresh" Command="{Binding LoadDataCommand}" Width="80" Height="30" Margin="0,0,10,0"/>
-                        <Button Content="Add Major" Width="90" Height="30" Background="#10B981" Foreground="White"/>
+                        <Button Content="Deactivate" Command="{Binding DeactivateMajorCommand}" Width="90" Height="30" Background="#EF4444" Foreground="White"/>
                     </StackPanel>
 
-                    <DataGrid Grid.Row="1" ItemsSource="{Binding Majors}" SelectedItem="{Binding SelectedMajor}"
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBox Width="100" Height="30" Padding="5,0" VerticalContentAlignment="Center" Text="{Binding NewMajorId}" Margin="0,0,10,0" ToolTip="Major ID"/>
+                        <TextBox Width="180" Height="30" Padding="5,0" VerticalContentAlignment="Center" Text="{Binding NewMajorName}" Margin="0,0,10,0" ToolTip="Major Name"/>
+                        <Button Content="Add Major" Command="{Binding AddMajorCommand}" Width="90" Height="30" Background="#10B981" Foreground="White"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding Majors}" SelectedItem="{Binding SelectedMajor}"
                               AutoGenerateColumns="False" IsReadOnly="True" RowHeight="35" AlternatingRowBackground="#F9FAFB">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding MajorId}" Width="100"/>
                             <DataGridTextColumn Header="Name" Binding="{Binding MajorName}" Width="200"/>
                             <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
-                            <DataGridCheckBoxColumn Header="Is Active" Binding="{Binding IsActive}" Width="80"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
@@ -42,21 +50,31 @@
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    
+
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Refresh" Command="{Binding LoadDataCommand}" Width="80" Height="30" Margin="0,0,10,0"/>
-                        <Button Content="Add Class" Width="90" Height="30" Background="#10B981" Foreground="White" Margin="0,0,10,0"/>
-                        <Button Content="View Students" Command="{Binding ViewClassStudentsCommand}" Width="110" Height="30" Background="#3B82F6" Foreground="White"/>
+                        <Button Content="View Students" Command="{Binding ViewClassStudentsCommand}" Width="110" Height="30" Background="#3B82F6" Foreground="White" Margin="0,0,10,0"/>
+                        <ComboBox ItemsSource="{Binding Lecturers}" DisplayMemberPath="FullName" SelectedItem="{Binding HomeroomLecturerToAssign}" Width="150" Height="30" Margin="0,0,10,0" ToolTip="Homeroom lecturer"/>
+                        <Button Content="Assign Homeroom" Command="{Binding AssignHomeroomCommand}" Width="120" Height="30" Background="#8B5CF6" Foreground="White"/>
                     </StackPanel>
 
-                    <DataGrid Grid.Row="1" ItemsSource="{Binding Classes}" SelectedItem="{Binding SelectedClass}"
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBox Width="90" Height="30" Padding="5,0" VerticalContentAlignment="Center" Text="{Binding NewClassId}" Margin="0,0,10,0" ToolTip="Class ID"/>
+                        <TextBox Width="140" Height="30" Padding="5,0" VerticalContentAlignment="Center" Text="{Binding NewClassName}" Margin="0,0,10,0" ToolTip="Class Name"/>
+                        <ComboBox ItemsSource="{Binding Majors}" DisplayMemberPath="MajorName" SelectedItem="{Binding NewClassMajor}" Width="140" Height="30" Margin="0,0,10,0" ToolTip="Major"/>
+                        <TextBox Width="90" Height="30" Padding="5,0" VerticalContentAlignment="Center" Text="{Binding NewClassAcademicYear}" Margin="0,0,10,0" ToolTip="Academic Year"/>
+                        <Button Content="Add Class" Command="{Binding AddClassCommand}" Width="90" Height="30" Background="#10B981" Foreground="White"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding Classes}" SelectedItem="{Binding SelectedClass}"
                               AutoGenerateColumns="False" IsReadOnly="True" RowHeight="35" AlternatingRowBackground="#F9FAFB">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Class ID" Binding="{Binding ClassId}" Width="100"/>
-                            <DataGridTextColumn Header="Major" Binding="{Binding Major.MajorName}" Width="200"/>
-                            <DataGridTextColumn Header="Homeroom Lecturer" Binding="{Binding HomeroomLecturer.FullName}" Width="200"/>
+                            <DataGridTextColumn Header="Major" Binding="{Binding Major.MajorName}" SortMemberPath="Major.MajorName" Width="200"/>
+                            <DataGridTextColumn Header="Homeroom Lecturer" Binding="{Binding HomeroomLecturer.FullName}" SortMemberPath="HomeroomLecturer.FullName" Width="200"/>
                             <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
@@ -68,21 +86,29 @@
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    
+
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Refresh" Command="{Binding LoadDataCommand}" Width="80" Height="30" Margin="0,0,10,0"/>
-                        <Button Content="Add Lecturer" Width="100" Height="30" Background="#10B981" Foreground="White"/>
+                        <Button Content="Deactivate" Command="{Binding DeactivateLecturerCommand}" Width="90" Height="30" Background="#EF4444" Foreground="White"/>
                     </StackPanel>
 
-                    <DataGrid Grid.Row="1" ItemsSource="{Binding Lecturers}" SelectedItem="{Binding SelectedLecturer}"
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBox Width="100" Height="30" Padding="5,0" VerticalContentAlignment="Center" Text="{Binding NewLecturerId}" Margin="0,0,10,0" ToolTip="Lecturer ID"/>
+                        <TextBox Width="150" Height="30" Padding="5,0" VerticalContentAlignment="Center" Text="{Binding NewLecturerName}" Margin="0,0,10,0" ToolTip="Full Name"/>
+                        <TextBox Width="150" Height="30" Padding="5,0" VerticalContentAlignment="Center" Text="{Binding NewLecturerEmail}" Margin="0,0,10,0" ToolTip="Email"/>
+                        <Button Content="Add Lecturer" Command="{Binding AddLecturerCommand}" Width="100" Height="30" Background="#10B981" Foreground="White"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="2" ItemsSource="{Binding Lecturers}" SelectedItem="{Binding SelectedLecturer}"
                               AutoGenerateColumns="False" IsReadOnly="True" RowHeight="35" AlternatingRowBackground="#F9FAFB">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Lecturer ID" Binding="{Binding LecturerId}" Width="120"/>
                             <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" Width="200"/>
                             <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="200"/>
-                            <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="150"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
