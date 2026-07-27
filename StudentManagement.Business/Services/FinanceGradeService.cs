@@ -77,6 +77,7 @@ namespace StudentManagement.Business.Services
             return await query.ToListAsync();
         }
 
+        // F28: Manage student tuition (Calculate tuition from registered credits & price per credit; track due date and balance)
         public async Task GenerateTuitionForSemesterAsync(string semesterId, decimal pricePerCredit)
         {
             var registrations = await _context.Registrations
