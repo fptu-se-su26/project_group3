@@ -6,24 +6,32 @@
         xmlns:local="clr-namespace:StudentManagement.WPF"
         xmlns:views="clr-namespace:StudentManagement.WPF.Views"
         mc:Ignorable="d"
-        Title="Student Management System" Height="650" Width="1100" WindowStartupLocation="CenterScreen" Background="{StaticResource ParchmentBrush}">
+        Title="Student Management System" Height="700" Width="1200" WindowStartupLocation="CenterScreen" Background="{StaticResource ParchmentBrush}">
     <Window.Resources>
         <Style x:Key="SidebarMenuButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+            <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderThickness="3,0,0,0" BorderBrush="Transparent">
-                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" 
+                                BorderThickness="3,0,0,0" BorderBrush="Transparent"
+                                CornerRadius="0,8,8,0" Margin="0,2,12,2">
+                            <ContentPresenter VerticalAlignment="Center" 
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                              Margin="{TemplateBinding Padding}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#26456E"/>
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource GoldBrush}"/>
+                                <Setter TargetName="Bd" Property="Background" Value="#1E293B"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#3B82F6"/>
+                                <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -33,35 +41,66 @@
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="260"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="{StaticResource NavyBrush}">
+        <!-- ===== SIDEBAR ===== -->
+        <Border Grid.Column="0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#0F172A" Offset="0"/>
+                    <GradientStop Color="#1E293B" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
             <DockPanel>
-                <StackPanel DockPanel.Dock="Top" Margin="20,25,20,20">
+                <!-- Logo / Brand -->
+                <StackPanel DockPanel.Dock="Top" Margin="24,28,24,0">
                     <StackPanel Orientation="Horizontal">
-                        <Viewbox Width="28" Height="28" Margin="0,0,8,0">
-                            <Path Data="{StaticResource GraduationCapGeometry}" Fill="White" Stretch="Uniform"/>
-                        </Viewbox>
-                        <TextBlock Text="SMS Academy" FontSize="20" FontWeight="Bold" FontFamily="{StaticResource HeadingFont}" Foreground="White" VerticalAlignment="Center"/>
+                        <Border Width="38" Height="38" CornerRadius="10" Margin="0,0,12,0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#3B82F6" Offset="0"/>
+                                    <GradientStop Color="#6366F1" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Viewbox Width="20" Height="20" Margin="0">
+                                <Path Data="{StaticResource GraduationCapGeometry}" Fill="White" Stretch="Uniform"/>
+                            </Viewbox>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="SMS Academy" FontSize="18" FontWeight="Bold" FontFamily="{StaticResource HeadingFont}" Foreground="White"/>
+                            <TextBlock Text="Management System" FontSize="10" Foreground="#64748B" Margin="0,-1,0,0"/>
+                        </StackPanel>
                     </StackPanel>
-                    <Border Height="2" Background="{StaticResource GoldBrush}" Margin="0,10,0,10" HorizontalAlignment="Stretch"/>
-                    <TextBlock Text="{Binding CurrentUserDisplay}" FontSize="12" Foreground="#D8DEE9" TextWrapping="Wrap"/>
+                    <Border Height="1" Background="#334155" Margin="0,18,0,12"/>
+                    <!-- User info -->
+                    <Border Background="#1E293B" CornerRadius="8" Padding="12,10" Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="32" Height="32" CornerRadius="16" Background="#3B82F6" Margin="0,0,10,0">
+                                <TextBlock Text="👤" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="{Binding CurrentUserDisplay}" FontSize="12" Foreground="#CBD5E1" TextWrapping="Wrap" VerticalAlignment="Center" MaxWidth="140"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Height="1" Background="#334155" Margin="0,4,0,8"/>
                 </StackPanel>
 
-                <StackPanel DockPanel.Dock="Bottom" Margin="10,0,10,20">
-                    <Button Content="Change Password" Command="{Binding ChangePasswordCommand}" Height="38" Margin="0,0,0,8"
-                            Background="{StaticResource NavyDarkBrush}" Foreground="White" BorderThickness="0"/>
-                    <Button Content="Logout" Command="{Binding LogoutCommand}" Height="38"
-                            Background="{StaticResource MaroonBrush}" Foreground="White" BorderThickness="0" FontWeight="SemiBold"/>
+                <!-- Bottom Buttons -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="16,0,16,24">
+                    <Border Height="1" Background="#334155" Margin="0,0,0,16"/>
+                    <Button Content="🔑  Change Password" Command="{Binding ChangePasswordCommand}" Height="40" Margin="0,0,0,8"
+                            Background="#1E293B" Foreground="#94A3B8" BorderThickness="0" FontSize="13"/>
+                    <Button Content="🚪  Logout" Command="{Binding LogoutCommand}" Height="40"
+                            Background="#7F1D1D" Foreground="#FCA5A5" BorderThickness="0" FontWeight="SemiBold" FontSize="13"/>
                 </StackPanel>
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <!-- Menu Items -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,4,0,0">
                     <ItemsControl ItemsSource="{Binding MenuItems}" Margin="0">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Content="{Binding Title}" Command="{Binding Command}" Height="42" Style="{StaticResource SidebarMenuButton}"/>
+                                <Button Content="{Binding Title}" Command="{Binding Command}" Height="44" Style="{StaticResource SidebarMenuButton}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -69,6 +108,33 @@
             </DockPanel>
         </Border>
 
-        <views:DashboardView Grid.Column="1" DataContext="{Binding Dashboard}"/>
+        <!-- ===== MAIN CONTENT ===== -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Top bar with Back Button -->
+            <Border Grid.Row="0" Margin="24,16,24,0">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsNotDashboard}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Button Content="← Back to Dashboard" Command="{Binding GoToDashboardCommand}" 
+                        Background="#3B82F6" Foreground="White" Padding="18,10" BorderThickness="0" FontWeight="SemiBold" HorizontalAlignment="Left"/>
+            </Border>
+
+            <!-- Main Content Area -->
+            <AdornerDecorator Grid.Row="1">
+                <ContentControl Content="{Binding CurrentView}" Margin="0"/>
+            </AdornerDecorator>
+        </Grid>
     </Grid>
 </Window>

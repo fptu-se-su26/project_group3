@@ -1,10 +1,10 @@
-using StudentManagement.WPF.ViewModels;
+﻿using StudentManagement.WPF.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace StudentManagement.WPF.Views
 {
-    public partial class UserManagementView : Window
+    public partial class UserManagementView : UserControl
     {
         public UserManagementView()
         {
@@ -20,3 +20,4 @@ namespace StudentManagement.WPF.Views
         }
     }
 }
+

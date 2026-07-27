@@ -17,20 +17,36 @@ namespace StudentManagement.WPF.ViewModels
 
         public ObservableCollection<MenuItemViewModel> MenuItems { get; } = new();
 
-        public DashboardViewModel Dashboard { get; }
+        private object _currentView;
+        public object CurrentView
+        {
+            get => _currentView;
+            set
+            {
+                _currentView = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsNotDashboard));
+            }
+        }
+
+        public bool IsNotDashboard => CurrentView != null && !(CurrentView is DashboardView);
 
         public ICommand LogoutCommand { get; }
         public ICommand ChangePasswordCommand { get; }
+        public ICommand GoToDashboardCommand { get; }
 
-        public event Action? OnLogout;
+        public event Action? OnLogoutRequested;
 
         public MainWindowViewModel(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            Dashboard = _serviceProvider.GetRequiredService<DashboardViewModel>();
+            
+            // Initial view is Dashboard
+            GoToDashboard();
 
             LogoutCommand = new RelayCommand(_ => Logout());
             ChangePasswordCommand = new RelayCommand(_ => OpenChangePassword());
+            GoToDashboardCommand = new RelayCommand(_ => GoToDashboard());
 
             BuildMenu();
         }
@@ -41,41 +57,47 @@ namespace StudentManagement.WPF.ViewModels
 
             if (role == "Administrator")
             {
-                MenuItems.Add(new MenuItemViewModel("User & Role Management", new RelayCommand(_ => OpenWindow<UserManagementView>())));
+                MenuItems.Add(new MenuItemViewModel("User & Role Management", new RelayCommand(_ => OpenView<UserManagementView>())));
             }
 
             if (role is "Administrator" or "AcademicStaff")
             {
-                MenuItems.Add(new MenuItemViewModel("Student Management", new RelayCommand(_ => OpenWindow<StudentManagementView>())));
-                MenuItems.Add(new MenuItemViewModel("Academic Management", new RelayCommand(_ => OpenWindow<AcademicManagementView>())));
-                MenuItems.Add(new MenuItemViewModel("Course & Subject Management", new RelayCommand(_ => OpenWindow<CourseManagementView>())));
+                MenuItems.Add(new MenuItemViewModel("Student Management", new RelayCommand(_ => OpenView<StudentManagementView>())));
+                MenuItems.Add(new MenuItemViewModel("Academic Management", new RelayCommand(_ => OpenView<AcademicManagementView>())));
+                MenuItems.Add(new MenuItemViewModel("Course & Subject Management", new RelayCommand(_ => OpenView<CourseManagementView>())));
             }
 
             if (role == "Student")
             {
-                MenuItems.Add(new MenuItemViewModel("Course Registration", new RelayCommand(_ => OpenWindow<CourseRegistrationView>())));
+                MenuItems.Add(new MenuItemViewModel("Course Registration", new RelayCommand(_ => OpenView<CourseRegistrationView>())));
             }
 
             if (role is "Administrator" or "Lecturer")
             {
-                MenuItems.Add(new MenuItemViewModel("Grade Management", new RelayCommand(_ => OpenWindow<GradeManagementView>())));
+                MenuItems.Add(new MenuItemViewModel("Grade Management", new RelayCommand(_ => OpenView<GradeManagementView>())));
             }
 
             if (role is "Administrator" or "Accountant")
             {
-                MenuItems.Add(new MenuItemViewModel("Finance & Tuition", new RelayCommand(_ => OpenWindow<FinanceReportingView>())));
+                MenuItems.Add(new MenuItemViewModel("Finance & Tuition", new RelayCommand(_ => OpenView<FinanceReportingView>())));
             }
 
             if (role is "Administrator" or "Accountant" or "AcademicStaff" or "Student")
             {
-                MenuItems.Add(new MenuItemViewModel("Reports & Results", new RelayCommand(_ => OpenWindow<ReportsView>())));
+                MenuItems.Add(new MenuItemViewModel("Reports & Results", new RelayCommand(_ => OpenView<ReportsView>())));
             }
         }
 
-        private void OpenWindow<TWindow>() where TWindow : System.Windows.Window
+        private void OpenView<TControl>() where TControl : System.Windows.Controls.UserControl
         {
-            var window = _serviceProvider.GetRequiredService<TWindow>();
-            window.Show();
+            var view = _serviceProvider.GetRequiredService<TControl>();
+            CurrentView = view;
+        }
+
+        private void GoToDashboard()
+        {
+            var dashboard = _serviceProvider.GetRequiredService<DashboardView>();
+            CurrentView = dashboard;
         }
 
         private void OpenChangePassword()
@@ -91,7 +113,7 @@ namespace StudentManagement.WPF.ViewModels
         private void Logout()
         {
             SessionManager.Instance.Logout();
-            OnLogout?.Invoke();
+            OnLogoutRequested?.Invoke();
         }
     }
 }

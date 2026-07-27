@@ -12,6 +12,9 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
-        viewModel.OnLogout += () => OnLogoutRequested?.Invoke();
+        if (DataContext is ViewModels.MainWindowViewModel vm)
+        {
+            vm.OnLogoutRequested += () => OnLogoutRequested?.Invoke();
+        }
     }
 }
