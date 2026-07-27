@@ -124,6 +124,7 @@ namespace StudentManagement.Business.Services
             await _context.SaveChangesAsync();
         }
 
+        // F29: Record tuition payment (Record cash or bank-transfer payments & prevent overpayment)
         public async Task<(bool IsSuccess, string Message)> ProcessPaymentAsync(int tuitionId, decimal amount, PaymentMethod method, string? note)
         {
             var tuition = await _context.Tuitions.FindAsync(tuitionId);
