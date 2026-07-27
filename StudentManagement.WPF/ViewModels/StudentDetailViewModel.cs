@@ -1,10 +1,12 @@
 using StudentManagement.Business.Interfaces;
+using StudentManagement.Domain.Enums;
 using StudentManagement.Domain.Entities;
 using StudentManagement.WPF.Commands;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows;
 using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
 namespace StudentManagement.WPF.ViewModels
 {
@@ -12,8 +14,14 @@ namespace StudentManagement.WPF.ViewModels
     {
         private readonly IStudentService _studentService;
         private readonly bool _isEditMode;
+        private readonly StudentStatus _originalStatus;
 
         public Student CurrentStudent { get; set; }
+
+        public ObservableCollection<StudentStatus> StatusOptions { get; } = new(Enum.GetValues<StudentStatus>());
+
+        private string? _statusReason;
+        public string? StatusReason { get => _statusReason; set { _statusReason = value; OnPropertyChanged(); } }
 
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
@@ -26,14 +34,15 @@ namespace StudentManagement.WPF.ViewModels
             _studentService = studentService;
             if (student == null)
             {
-                CurrentStudent = new Student { EnrollmentDate = DateTime.Now, DateOfBirth = DateTime.Now };
+                CurrentStudent = new Student { EnrollmentDate = DateTime.Now, DateOfBirth = DateTime.Now, Status = StudentStatus.Studying };
                 _isEditMode = false;
             }
             else
             {
-                CurrentStudent = student; // Need deep copy in reality, using ref for simplicity
+                CurrentStudent = student;
                 _isEditMode = true;
             }
+            _originalStatus = CurrentStudent.Status;
 
             SaveCommand = new RelayCommand(async _ => await SaveAsync());
             CancelCommand = new RelayCommand(_ => OnRequestClose?.Invoke());
@@ -43,23 +52,42 @@ namespace StudentManagement.WPF.ViewModels
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(CurrentStudent.StudentId) || string.IsNullOrWhiteSpace(CurrentStudent.FullName))
+                (bool IsSuccess, string Message) result;
+                var statusChanged = _isEditMode && CurrentStudent.Status != _originalStatus;
+
+                // Validate the status-change reason before persisting anything, so a
+                // rejected reason never leaves the profile fields saved with a
+                // half-applied status change.
+                if (statusChanged
+                    && (CurrentStudent.Status == StudentStatus.Suspended || CurrentStudent.Status == StudentStatus.DroppedOut)
+                    && string.IsNullOrWhiteSpace(StatusReason))
                 {
-                    MessageBox.Show("ID and Name are required.", "Validation Error");
+                    MessageBox.Show("A reason is required for this status change.", "Validation Error");
                     return;
                 }
 
                 if (_isEditMode)
                 {
-                    await _studentService.UpdateStudentAsync(CurrentStudent);
+                    result = await _studentService.UpdateStudentAsync(CurrentStudent);
+                    if (result.IsSuccess && statusChanged)
+                    {
+                        result = await _studentService.UpdateStudentStatusAsync(CurrentStudent.StudentId, CurrentStudent.Status, StatusReason);
+                    }
                 }
                 else
                 {
-                    await _studentService.AddStudentAsync(CurrentStudent);
+                    result = await _studentService.AddStudentAsync(CurrentStudent);
                 }
+
+                if (!result.IsSuccess)
+                {
+                    MessageBox.Show(result.Message, "Validation Error");
+                    return;
+                }
+
                 OnRequestClose?.Invoke();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error saving");
             }

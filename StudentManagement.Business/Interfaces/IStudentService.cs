@@ -9,11 +9,11 @@ namespace StudentManagement.Business.Interfaces
     {
         Task<IEnumerable<Student>> GetAllStudentsAsync(string? searchKeyword = null, string? classId = null, string? majorId = null, StudentStatus? status = null);
         Task<Student?> GetStudentByIdAsync(string id);
-        Task AddStudentAsync(Student student);
-        Task UpdateStudentAsync(Student student);
-        Task UpdateStudentStatusAsync(string studentId, StudentStatus newStatus);
+        Task<(bool IsSuccess, string Message)> AddStudentAsync(Student student);
+        Task<(bool IsSuccess, string Message)> UpdateStudentAsync(Student student);
+        Task<(bool IsSuccess, string Message)> UpdateStudentStatusAsync(string studentId, StudentStatus newStatus, string? reason);
         Task ExportToJsonAsync(string filePath, IEnumerable<Student> students);
         Task ExportToXmlAsync(string filePath, IEnumerable<Student> students);
-        Task<(int success, int fail)> ImportFromJsonAsync(string filePath);
+        Task<(int success, int fail, List<string> errors)> ImportFromJsonAsync(string filePath);
     }
 }
